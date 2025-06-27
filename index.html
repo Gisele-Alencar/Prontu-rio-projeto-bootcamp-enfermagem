@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Sistema de Prontuário Eletrônico</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f6f2;
+        }
+        .patient-card {
+            transition: all 0.3s ease;
+        }
+        .patient-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(141, 103, 72, 0.12), 0 4px 6px -2px rgba(141, 103, 72, 0.05);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .alert-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: #f87171;
+        }
+        .bg-creme { background-color: #f8f6f2; }
+        .bg-bege { background-color: #f3e8e6; }
+        .bg-marrom { background-color: #8d6748; }
+        .bg-branco { background-color: #fff; }
+        .text-marrom { color: #8d6748; }
+        .border-marrom { border-color: #8d6748; }
+        .shadow-marrom { box-shadow: 0 2px 8px 0 rgba(141,103,72,0.06);}
+        ::selection { background: #f3e8e6; }
+        /* Scrollbar style for modal */
+        .modal-scroll::-webkit-scrollbar { width: 8px; }
+        .modal-scroll::-webkit-scrollbar-thumb { background: #f3e8e6; border-radius: 8px; }
+    </style>
+</head>
+<body class="bg-creme">
+    <div class="min-h-screen flex flex-col bg-creme">
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-[#f3e8e6] to-[#f8f6f2] text-marrom shadow-lg">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-marrom" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                    <h1 class="text-2xl font-bold text-marrom">Teste</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-marrom" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <span class="alert-badge"></span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <img src="https://ui-avatars.com/api/?name=Dr+Teste&background=f3e8e6&color=8d6748&rounded=true" alt="Usuário" class="h-8 w-8 rounded-full bg-white p-1 border border-marrom">
+                        <span class="hidden md:inline text-marrom">Dr. Teste</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="flex flex-1">
+            <!-- Sidebar -->
+            <aside class="w-16 md:w-64 bg-branco shadow-lg">
+                <nav class="p-4 flex flex-col h-full">
+                    <div class="space-y-4">
+                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg bg-bege text-marrom font-medium">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-marrom" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            <span class="hidden md:inline">Início</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-creme text-marrom">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-marrom" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            <span class="hidden md:inline">Pacientes</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-creme text-marrom">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-marrom" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span class="hidden md:inline">Agenda</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-creme text-marrom">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-marrom" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                            </svg>
+                            <span class="hidden md:inline">Relatórios</span>
+                        </a>
+                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-creme text-marrom">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-marrom" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span class="hidden md:inline">Configurações</span>
+                        </a>
+                    </div>
+                    <div class="mt-auto">
+                        <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-creme text-marrom">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-marrom" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            <span class="hidden md:inline">Sair</span>
+                        </a>
+                    </div>
+                </nav>
+            </aside>
+
+            <!-- Content Area -->
+            <main class="flex-1 p-4 md:p-6 overflow-auto">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-semibold text-marrom">Prontuário Eletrônico</h2>
+                    <p class="text-marrom">Consulte e gerencie informações dos pacientes</p>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="mb-6">
+                    <div class="relative">
+                        <input type="text" id="search-patient" placeholder="Buscar paciente por nome ou CPF..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-marrom focus:outline-none focus:ring-2 focus:ring-[#8d6748] focus:border-[#8d6748] bg-branco text-marrom">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-marrom" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patient List -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                    <div class="patient-card bg-branco rounded-lg shadow-marrom p-4 cursor-pointer" onclick="showPatientDetails(1)">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="bg-bege text-marrom p-2 rounded-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-marrom">Valentina Silva</h3>
+                                    <p class="text-sm text-marrom">CPF: 123.456.789-00</p>
+                                </div>
+                            </div>
+                            <div class="bg-branco border border-marrom text-marrom px-2 py-1 rounded-full text-xs font-medium">Alérgica</div>
+                        </div>
+                        <div class="mt-3 text-sm text-marrom">
+                            <p>Idade: 45 anos</p>
+                            <p>Última consulta: 15/05/2023</p>
+                        </div>
+                    </div>
+
+                    <div class="patient-card bg-branco rounded-lg shadow-marrom p-4 cursor-pointer" onclick="showPatientDetails(2)">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="bg-bege text-marrom p-2 rounded-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-marrom">Joaquim Moreira </h3>
+                                    <p class="text-sm text-marrom">CPF: 987.654.321-00</p>
+                                </div>
+                            </div>
+                            <div class="bg-branco border border-marrom text-marrom px-2 py-1 rounded-full text-xs font-medium">Hipertenso</div>
+                        </div>
+                        <div class="mt-3 text-sm text-marrom">
+                            <p>Idade: 62 anos</p>
+                            <p>Última consulta: 03/06/2023</p>
+                        </div>
+                    </div>
+
+                    <div class="patient-card bg-branco rounded-lg shadow-marrom p-4 cursor-pointer" onclick="showPatientDetails(3)">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="bg-bege text-marrom p-2 rounded-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-marrom">Ana Alice </h3>
+                                    <p class="text-sm text-marrom">CPF: 456.789.123-00</p>
+                                </div>
+                            </div>
+                            <div class="bg-branco border border-marrom text-marrom px-2 py-1 rounded-full text-xs font-medium">Diabética</div>
+                        </div>
+                        <div class="mt-3 text-sm text-marrom">
+                            <p>Idade: 38 anos</p>
+                            <p>Última consulta: 22/06/2023</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patient Details Modal -->
+                <div id="patient-details-modal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                    <div class="bg-branco rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+                        <!-- Modal Header -->
+                        <div class="bg-bege text-marrom px-6 py-4 flex justify-between items-center">
+                            <div class="flex items-center space-x-3">
+                                <div class="bg-marrom text-white p-2 rounded-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold" id="modal-patient-name">Teste Silva</h3>
+                                    <p class="text-sm text-marrom" id="modal-patient-info">45 anos | CPF: 123.456.789-00</p>
+                                </div>
+                            </div>
+                            <button onclick="closePatientDetails()" class="text-marrom hover:text-marrom/70 focus:outline-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Modal Tabs -->
+                        <div class="bg-creme px-6 py-2 border-b">
+                            <div class="flex space-x-4 overflow-x-auto">
+                                <button onclick="changeTab('resumo')" id="tab-resumo" class="tab-button px-4 py-2 font-medium text-marrom border-b-2 border-marrom">Resumo</button>
+                                <button onclick="changeTab('historico')" id="tab-historico" class="tab-button px-4 py-2 font-medium text-marrom hover:text-marrom/80">Histórico</button>
+                                <button onclick="changeTab('medicacoes')" id="tab-medicacoes" class="tab-button px-4 py-2 font-medium text-marrom hover:text-marrom/80">Medicações</button>
+                                <button onclick="changeTab('exames')" id="tab-exames" class="tab-button px-4 py-2 font-medium text-marrom hover:text-marrom/80">Exames</button>
+                                <button onclick="changeTab('alergias')" id="tab-alergias" class="tab-button px-4 py-2 font-medium text-marrom hover:text-marrom/80">Alergias</button>
+                            </div>
+                        </div>
+
+                        <!-- Modal Content -->
+                        <div class="p-6 overflow-y-auto flex-1 modal-scroll">
+                            <!-- Conteúdo dinâmico por paciente -->
+                            <div id="resumo" class="tab-content active"></div>
+                            <div id="historico" class="tab-content"></div>
+                            <div id="medicacoes" class="tab-content"></div>
+                            <div id="exames" class="tab-content"></div>
+                            <div id="alergias" class="tab-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+    // Dados fictícios para cada paciente
+    const patients = [
+        {
+            id: 1,
+            name: "Teste Silva",
+            cpf: "123.456.789-00",
+            idade: 45,
+            resumo: `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-branco p-4 rounded-lg shadow-marrom">
+                        <h4 class="text-lg font-medium text-marrom mb-3">Informações Pessoais</h4>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-medium">Nome completo:</span> Teste Maria Silva</p>
+                            <p><span class="font-medium">Data de nascimento:</span> 15/08/1978 (45 anos)</p>
+                            <p><span class="font-medium">Sexo:</span> Feminino</p>
+                            <p><span class="font-medium">Tipo sanguíneo:</span> O+</p>
+                            <p><span class="font-medium">Contato:</span> (11) 98765-4321</p>
+                            <p><span class="font-medium">E-mail:</span> teste.silva@email.com</p>
+                            <p><span class="font-medium">Endereço:</span> Rua das Flores, 123 - São Paulo/SP</p>
+                        </div>
+                    </div>
+                    <div class="bg-branco p-4 rounded-lg shadow-marrom">
+                        <h4 class="text-lg font-medium text-marrom mb-3">Condições e Alertas</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center bg-bege p-2 rounded-md">
+                                <span class="w-3 h-3 bg-red-600 rounded-full mr-2"></span>
+                                <span class="text-marrom font-medium">Alergia a penicilina</span>
+                            </div>
+                            <div class="flex items-center bg-bege p-2 rounded-md">
+                                <span class="w-3 h-3 bg-yellow-600 rounded-full mr-2"></span>
+                                <span class="text-marrom font-medium">Hipertensão arterial</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 bg-branco p-4 rounded-lg shadow-marrom">
+                    <h4 class="text-lg font-medium text-marrom mb-3">Última Consulta (15/05/2023)</h4>
+                    <div class="space-y-3">
+                        <div>
+                            <h5 class="font-medium">Queixa Principal</h5>
+                            <p class="text-marrom">Dor de cabeça frequente e tontura.</p>
+                        </div>
+                        <div>
+                            <h5 class="font-medium">Sinais Vitais</h5>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-1">
+                                <div class="bg-bege p-2 rounded-md">
+                                    <p class="text-sm text-marrom">PA</p>
+                                    <p class="font-medium">140/90 mmHg</p>
+                                </div>
+                                <div class="bg-bege p-2 rounded-md">
+                                    <p class="text-sm text-marrom">FC</p>
+                                    <p class="font-medium">78 bpm</p>
+                                </div>
+                                <div class="bg-bege p-2 rounded-md">
+                                    <p class="text-sm text-marrom">Temp.</p>
+                                    <p class="font-medium">36.5 °C</p>
+                                </div>
+                                <div class="bg-bege p-2 rounded-md">
+                                    <p class="text-sm text-marrom">Saturação</p>
+                                    <p class="font-medium">98%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h5 class="font-medium">Conduta</h5>
+                            <p class="text-marrom">Ajuste da medicação anti-hipertensiva. Solicitado exames laboratoriais.</p>
+                        </div>
+                    </div>
+                </div>
+            `,
+            historico: `
+                <div class="bg-branco rounded-lg shadow-marrom">
+                    <div class="p-4 border-b">
+                        <h4 class="text-lg font-medium text-marrom">Histórico de Consultas</h4>
+                    </div>
+                    <div class="p-4">
+                        <ul class="space-y-4">
+                            <li>
+                                <span class="block font-medium text-marrom">15/05/2023</span>
+                                Consulta de rotina, ajuste de anti-hipertensivo.
+                            </li>
+                            <li>
+                                <span class="block font-medium text-marrom">10/04/2023</span>
+                                Exames de rotina solicitados.
+                            </li>
+                            <li>
+                                <span class="block font-medium text-marrom">15/02/2023</span>
+                                Diagnóstico de hipertensão.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            medicacoes: `
+                <div class="bg-branco rounded-lg shadow-marrom mb-6">
+                    <div class="p-4 border-b">
+                        <h4 class="text-lg font-medium text-marrom">Medicações Atuais</h4>
+                    </div>
+                    <div class="p-4">
+                        <table class="min-w-full divide-y divide-bege">
+                            <thead>
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-marrom uppercase">Medicamento</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-marrom uppercase">Dosagem</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-marrom uppercase">Posologia</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="px-4 py-2">Losartana</td>
+                                    <td class="px-4 py-2">50mg</td>
+                                    <td class="px-4 py-2">1x ao dia</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2">Hidroclorotiazida</td>
+                                    <td class="px-4 py-2">25mg</td>
+                                    <td class="px-4 py-2">1x ao dia</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `,
+            exames: `
+                <div class="bg-branco rounded-lg shadow-marrom mb-6">
+                    <div class="p-4 border-b">
+                        <h4 class="text-lg font-medium text-marrom">Exames Recentes</h4>
+                    </div>
+                    <div class="p-4">
+                        <ul class="space-y-2">
+                            <li>
+                                <span class="font-medium">Hemograma:</span> 10/04/2023 - Normal
+                            </li>
+                            <li>
+                                <span class="font-medium">Glicemia:</span> 10/04/2023 - 95 mg/dL
+                            </li>
+                            <li>
+                                <span class="font-medium">ECG:</span> 15/05/2023 - Ritmo sinusal normal
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            alergias: `
+                <div class="bg-branco rounded-lg shadow-marrom mb-6">
+                    <div class="p-4 border-b">
+                        <h4 class="text-lg font-medium text-marrom">Alergias</h4>
+                    </div>
+                    <div class="p-4">
+                        <ul class="space-y-2">
+                            <li>
+                                <span class="font-medium text-marrom">Penicilina:</span> Urticária e edema facial.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            `
+        },
+        {
+            id: 2,
+            name: "João Teste",
+            cpf: "987.654.321-00",
+            idade: 62,
+            resumo: `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-branco p-4 rounded-lg shadow-marrom">
+                        <h4 class="text-lg font-medium text-marrom mb-3">Informações Pessoais</h4>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-medium">Nome completo:</span> João Carlos Teste</p>
+                            <p><span class="font-medium">Data de nascimento:</span> 20/02/1963 (62 anos)</p>
+                            <p><span class="font-medium">Sexo:</span> Masculino</p>
+                            <p><span class="font-medium">Tipo sanguíneo:</span> A-</p>
+                            <p><span class="font-medium">Contato:</span> (21) 91234-5678</p>
+                            <p><span class="font-medium">E-mail:</span> joao.teste@email.com</p>
+                            <p><span class="font-medium">Endereço:</span> Av. Brasil, 456 - Rio de Janeiro/RJ</p>
+                        </div>
+                    </div>
+                    <div class="bg-branco p-4 rounded-lg shadow-marrom">
+                        <h4 class="text-lg font-medium text-marrom mb-3">Condições e Alertas</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center bg-bege p-2 rounded-md">
+                                <span class="w-3 h-3 bg-yellow-600 rounded-full mr-2"></span>
+                                <span class="text-marrom font-medium">Hipertensão arterial</span>
+                            </div>
+                            <div class="flex items-center bg-bege p-2 rounded-md">
+                                <span class="w-3 h-3 bg-blue-600 rounded-full mr-2"></span>
+                                <span class="text-marrom font-medium">Dislipidemia</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 bg-branco p-4 rounded-lg shadow-marrom">
+                    <h4 class="text-lg font-medium text-marrom mb-3">Última Consulta (03/06/2023)</h4>
+                    <div class="space-y-3">
+                        <div>
+                            <h5 class="font-medium">Queixa Principal</h5>
+                            <p class="text-marrom">Dor torácica leve após esforço.</p>
+                        </div>
+                        <div>
+                            <h5 class="font-medium">Sinais Vitais</h5>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-1">
+                                <div class="bg-bege p-2 rounded-md">
+                                    <p class="text-sm text-marrom">PA</p>
+                                    <p class="font-medium">150/95 mmHg</p>
+                                </div>
+                                <div class="bg-bege p-2 rounded-md">
+                                    <p class="text-sm text-marrom">FC</p>
+                                    <p class="font-medium">82 bpm</p>
+                                </div>
+                                <div class="bg-bege p-2 rounded-md">
+                                    <p class="text-sm text-marrom">Temp.</p>
+                                    <p class="font-medium">36.7 °C</p>
+                                </div>
+                                <div class="bg-bege p-2 rounded-md">
+                                    <p class="text-sm text-marrom">Saturação</p>
+                                    <p class="font-medium">96%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h5 class="font-medium">Conduta</h5>
+                            <p class="text-marrom">Solicitado teste ergométrico e ajuste dietético.</p>
+                        </div>
+                    </div>
+                </div>
+            `,
+            historico: `
+                <div class="bg-branco rounded-lg shadow-marrom">
+                    <div class="p-4 border-b">
+                        <h4 class="text-lg font-medium text-marrom">Histórico de Consultas</h4>
+                    </div>
+                    <div class="p-4">
+                        <ul class="space-y-4">
+                            <li>
+                                <span class="block font-medium text-marrom">03/06/2023</span>
+                                Dor torácica leve, solicitado teste ergométrico.
+                            </li>
+                            <li>
+                                <span class="block font-medium text-marrom">10/03/2023</span>
+                                Revisão de tratamento anti-hipertensivo.
+                            </li>
+                            <li>
+                                <span class="block font-medium text-marrom">15/01/2023</span>
+                                Diagnóstico de dislipidemia.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            medicacoes: `
+                <div class="bg-branco rounded-lg shadow-marrom mb-6">
+                    <div class="p-4 border-b">
+                        <h4 class="text-lg font-medium text-marrom">Medicações Atuais</h4>
+                    </div>
+                    <div class="p-4">
+                        <table class="min-w-full divide-y divide-bege">
+                            <thead>
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-marrom uppercase">Medicamento</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-marrom uppercase">Dosagem</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-marrom uppercase">Posologia</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="px-4 py-2">Atenolol</td>
+                                    <td class="px-4 py-2">50mg</td>
+                                    <td class="px-4 py-2">1x ao dia</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2">Sinvastatina</td>
+                                    <td class="px-4 py-2">20mg</td>
+                                    <td class="px-4 py-2">à noite</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `,
+            exames: `
+                <div class="bg-branco rounded-lg shadow-marrom mb-6">
+                    <div class="p-4 border-b">
+                        <h4 class="text-lg font-medium text-marrom">Exames Recentes</h4>
+                    </div>
+                    <div class="p-4">
+                        <ul class="space-y-2">
+                            <li>
+                                <span class="font-medium">Colesterol total:</span> 245 mg/dL
+                            </li>
+                            <li>
+                                <span class="font-medium">Triglicerídeos:</span> 200 mg/dL
+                            </li>
+                            <li>
+                                <span class="font-medium">Glicemia:</span> 102 mg/dL
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            alergias: `
+                <div class="bg-branco rounded-lg shadow-marrom mb-6">
+                    <div class="p-4 border-b">
+                        <h4 class="text-lg font-medium text-marrom">Alergias</h4>
+                    </div>
+                    <div class="p-4">
+                        <ul class="space-y-2">
+                            <li>
+                                <span class="font-medium text-marrom">Nenhuma alergia registrada.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            `
+        },
+        {
+            id: 3,
+            name: "Ana Teste",
+            cpf: "456.789.123-00",
+            idade: 38,
+            resumo: `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-branco p-4 rounded-lg shadow-marrom">
+                        <h4 class="text-lg font-medium text-marrom mb-3">Informações Pessoais</h4>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-medium">Nome completo:</span> Ana Beatriz Teste</p>
+                            <p><span class="font-medium">Data de nascimento:</span> 10/10/1986 (38 anos)</p>
+                            <p><span class="font-medium">Sexo:</span> Feminino</p>
+                            <p><span class="font-medium">Tipo sanguíneo:</span> B+</p>
+                            <p><span class="font-medium">Contato:</span> (31) 92345-6789</p>
+                            <p><span class="font-medium">E-mail:</span> ana.teste@email.com</p>
+                            <p><span class="font-medium">Endereço:</span> Rua Minas, 789 - Belo Horizonte/MG</p>
+                        </div>
+                    </div>
+                    <div class="bg-branco p-4 rounded-lg shadow-marrom">
+                        <h4 class="text-lg font-medium text-marrom mb-3">Condições e Alertas</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center bg-bege p-2 rounded-md">
+                                <span class="w-3 h-3 bg-purple-600 rounded-full mr-2"></span>
+                                <span class="text-marrom font-medium">Diabetes tipo 2</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 bg-branco p-4 rounded-lg shadow-marrom">
+                    <h4 class="text-lg font-medium text-marrom mb-3">Última Consulta (22/06/2023)</h4>
+                    <div class="space-y-3">
+                        <div>
+                            <h5 class="font-medium">Queixa Principal</h5>
+                            <p class="text-marrom">Formigamento nos pés e aumento da sede.</p>
+                        </div>
+                        <div>
+                            <h5 class="font-medium">Sinais Vitais</h5>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-1">
+                                <div class="bg-bege p-2 rounded-md">
+                                    <p class="text-sm text-marrom">PA</p>
+                                    <p class="font-medium">120/80 mmHg</p>
+                                </div>
+                                <div class="bg-bege p-2 rounded-md">
+                                    <p class="text-sm text-marrom">FC</p>
+                                    <p class="font-medium">72 bpm</p>
+                                </div>
+                                <div class="bg-bege p-2 rounded-md">
+                                    <p class="text-sm text-marrom">Temp.</p>
+                                    <p class="font-medium">36.3 °C</p>
+                                </div>
+                                <div class="bg-bege p-2 rounded-md">
+                                    <p class="text-sm text-marrom">Saturação</p>
+                                    <p class="font-medium">99%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h5 class="font-medium">Conduta</h5>
+                            <p class="text-marrom">Ajuste da dose de metformina. Solicitado exame de HbA1c.</p>
+                        </div>
+                    </div>
+                </div>
+            `,
+            historico: `
+                <div class="bg-branco rounded-lg shadow-marrom">
+                    <div class="p-4 border-b">
+                        <h4 class="text-lg font-medium text-marrom">Histórico de Consultas</h4>
+                    </div>
+                    <div class="p-4">
+                        <ul class="space-y-4">
+                            <li>
+                                <span class="block font-medium text-marrom">22/06/2023</span>
+                                Ajuste de metformina, solicitado HbA1c.
+                            </li>
+                            <li>
+                                <span class="block font-medium text-marrom">05/05/2023</span>
+                                Retorno com glicemia elevada.
+                            </li>
+                            <li>
+                                <span class="block font-medium text-marrom">18/03/2023</span>
+                                Diagnóstico de diabetes tipo 2.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            medicacoes: `
+                <div class="bg-branco rounded-lg shadow-marrom mb-6">
+                    <div class="p-4 border-b">
+                        <h4 class="text-lg font-medium text-marrom">Medicações Atuais</h4>
+                    </div>
+                    <div class="p-4">
+                        <table class="min-w-full divide-y divide-bege">
+                            <thead>
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-marrom uppercase">Medicamento</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-marrom uppercase">Dosagem</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-marrom uppercase">Posologia</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="px-4 py-2">Metformina</td>
+                                    <td class="px-4 py-2">850mg</td>
+                                    <td class="px-4 py-2">2x ao dia</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2">Gliclazida</td>
+                                    <td class="px-4 py-2">30mg</td>
+                                    <td class="px-4 py-2">1x ao dia</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `,
+            exames: `
+                <div class="bg-branco rounded-lg shadow-marrom mb-6">
+                    <div class="p-4 border-b">
+                        <h4 class="text-lg font-medium text-marrom">Exames Recentes</h4>
+                    </div>
+                    <div class="p-4">
+                        <ul class="space-y-2">
+                            <li>
+                                <span class="font-medium">HbA1c:</span> 8.2% (22/06/2023)
+                            </li>
+                            <li>
+                                <span class="font-medium">Glicemia jejum:</span> 145 mg/dL (05/05/2023)
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            alergias: `
+                <div class="bg-branco rounded-lg shadow-marrom mb-6">
+                    <div class="p-4 border-b">
+                        <h4 class="text-lg font-medium text-marrom">Alergias</h4>
+                    </div>
+                    <div class="p-4">
+                        <ul class="space-y-2">
+                            <li>
+                                <span class="font-medium text-marrom">Nenhuma alergia registrada.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            `
+        }
+    ];
+
+    // Modal logic
+    function showPatientDetails(id) {
+        const patient = patients.find(p => p.id === id);
+        if (!patient) return;
+        document.getElementById("modal-patient-name").innerText = patient.name;
+        document.getElementById("modal-patient-info").innerText = `${patient.idade} anos | CPF: ${patient.cpf}`;
+        document.getElementById("resumo").innerHTML = patient.resumo;
+        document.getElementById("historico").innerHTML = patient.historico;
+        document.getElementById("medicacoes").innerHTML = patient.medicacoes;
+        document.getElementById("exames").innerHTML = patient.exames;
+        document.getElementById("alergias").innerHTML = patient.alergias;
+
+        // Ativa a tab resumo
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.getElementById('resumo').classList.add('active');
+        // Ativa tab visual
+        document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('border-b-2', 'border-marrom'));
+        document.getElementById('tab-resumo').classList.add('border-b-2', 'border-marrom');
+
+        document.getElementById("patient-details-modal").classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+    }
+    function closePatientDetails() {
+        document.getElementById("patient-details-modal").classList.add("hidden");
+        document.body.style.overflow = "";
+    }
+    function changeTab(tab) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.getElementById(tab).classList.add('active');
+        document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('border-b-2', 'border-marrom'));
+        document.getElementById('tab-' + tab).classList.add('border-b-2', 'border-marrom');
+    }
+    </script>
+</body>
+</html>
